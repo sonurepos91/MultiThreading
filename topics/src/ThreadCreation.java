@@ -1,12 +1,13 @@
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.RunnableFuture;
 
 public class ThreadCreation {
 
     public static void main (String[] args) {
+
         Thread t1 = new Thread(new ThreadClass(), "Thread 1");
         Thread t2 = new Thread(new ThreadClass2(), "Thread 2");
+
         Callable<String> callable = new ThreadClass3();
         FutureTask<String> futureTask = new FutureTask<>(callable);
 
@@ -14,6 +15,18 @@ public class ThreadCreation {
         t1.start();
         t2.start();
         t4.start();
+
+        Callable<String> call =()-> "Thread t5 : started : " + Thread.currentThread().getName();
+        FutureTask<String> futureTask1 = new FutureTask<>(call);
+        Thread t5 = new Thread(futureTask1,"Thread 6");
+        t5.start();
+
+        try {
+            String result = futureTask1.get(); // This will block until the task is done
+            System.out.println(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Runnable runnable = () -> {
             System.out.println("Thread started");
@@ -36,10 +49,7 @@ public class ThreadCreation {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-
     }
-
     public static class ThreadClass extends Thread {
 
         public void run () {
@@ -50,7 +60,6 @@ public class ThreadCreation {
         }
 
     }
-
     public static class ThreadClass2 implements Runnable {
 
         @Override
